@@ -106,6 +106,19 @@
       const s={age:null,birth:null,retire:null,pad:12};
       const form=$('#ageForm'),msg=$('#ageMessage'),input=$('#ageInput'),save=$('#ageSave'),wrap=$('#calendarWrap'),can=$('#lifeCanvas'),fill=$('#todayFill'),lab=$('#todayLabel'),legend=$('#legendText'),tweetForm=$('#tweetForm');
 
+      const shareBtn=document.getElementById('shareBtn');
+      shareBtn.addEventListener('click',()=>{
+        if(navigator.share){
+          navigator.share({
+            title:'Not Another Day',
+            text:'Here’s how much time I have left — make every day count! #timeleft #wwydt',
+            url:window.location.href
+          });
+        } else {
+          alert('Sharing not supported on this device.');
+        }
+      });
+
       function init(){
         const a=parseFloat(localStorage.getItem(KEY));
         if(isFinite(a)){
