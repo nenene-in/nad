@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Another Day</title>
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --ink: rgba(255,255,255,0.3);
+      --muted: rgba(255,255,255,0.7);
+      --accent: #ffd700;
+      --glass: rgba(255,255,255,0.06);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+    body::before{content:"";position:fixed;inset:0;z-index:-2;background:url('https://images.unsplash.com/photo-1738996696058-be64a80d9b45') center/cover;filter:saturate(.9) contrast(1.05)}
+    body::after{content:"";position:fixed;inset:0;z-index:-1;backdrop-filter:blur(12px) saturate(1.1);background:radial-gradient(1200px 800px at 70% 10%, rgba(255,255,255,.05), transparent), linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.6))}
+
+    .shell{width:90vw;max-width:90vw;margin:24px auto 56px;padding:16px}
+    @media (max-width:768px){.shell{width:100vw;max-width:100vw;padding:12px}}
+
+    .panel{background:var(--glass);border:1px solid rgba(255,255,255,.06);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+    .brand{text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:#cfcfcf}
+    .iconbtn{background:rgba(255,255,255,.08);border:none;color:#eef;padding:8px 12px;border-radius:999px;cursor:pointer;font-size:12px;backdrop-filter:blur(6px) saturate(1.1);box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 6px 18px rgba(0,0,0,.25)}
+    .iconbtn:hover{background:rgba(255,255,255,.12)}
+    .iconbtn:active{transform:translateY(1px)}
+
+    .hero{padding:8px 20px 18px}
+    .todaybar{height:18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.01));position:relative;overflow:hidden}
+    .todaybar-fill{position:absolute;inset:0;background:linear-gradient(90deg, rgba(235, 69, 113, 0.7), rgba(79, 25, 39, 0.7))}
+    .todaybar-label{margin-top:8px;font-size:12px;color:#cfcfcf}
+
+    .age-form{display:flex;align-items:center;gap:10px;padding:16px 20px;margin:16px 20px;background:rgba(255,255,255,.05);border-radius:16px;backdrop-filter:blur(10px) saturate(1.2);}
+    .age-form span{font-size:16px;color:#fff;flex:1}
+    .age-form input{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,.08);color:#fff;border:none;border-radius:10px;padding:10px 12px;min-width:110px;box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
+    .age-form input:focus{outline:2px solid rgba(255,255,255,.3)}
+    .age-form button{background:rgba(255,255,255,.10);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 6px 18px rgba(0,0,0,.25)}
+    .age-form button:hover{background:rgba(255,255,255,.14)}
+    .age-form button:active{transform:translateY(1px)}
+
+    .legend{padding:12px 20px;display:flex;gap:18px;align-items:center;font-size:12px;color:#bdbdbd;border:none;margin:8px 12px 0}
+    .swatch{width:10px;height:10px;border-radius:50%;display:inline-block}
+    .swatch.past{background:var(--ink)}
+    .swatch.future{background:var(--muted)}
+    .swatch.today{background:var(--accent)}
+
+    .canvas-scroller{max-height:70vh;overflow:auto;padding:6px 12px 20px}
+    .canvas-frame{position:relative;padding:0}
+    canvas{display:block;border:none;background:transparent}
+
+    #tweetInput::placeholder { color: #cfcfcf; }
+    #ageInput::placeholder { color: #cfcfcf; }
+
+    .tweet-form {display:flex;justify-content:center;align-items:center;gap:8px;margin:20px;padding:14px;background:rgba(255,255,255,.04);border-radius:16px;backdrop-filter:blur(8px);}
+    .tweet-form input {flex:1;background:rgba(255,255,255,.08);border:none;color:#fff;border-radius:10px;padding:10px 12px;}
+    .tweet-form button {background:rgba(29,155,240,0.8);border:none;color:#fff;border-radius:10px;padding:10px 16px;cursor:pointer;}
+    .tweet-form button:hover {background:rgba(29,155,240,1);}
+
+    .footer{padding:12px 20px 18px;display:flex;justify-content:space-between;color:#aaa;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="panel">
+      <div class="topbar">
+        <div class="brand">NOT ANOTHER DAY</div>
+        <div>
+          <button class="iconbtn" id="btnReset">Reset</button>
+        </div>
+      </div>
+      <div class="hero">
+        <div class="todaybar"><div class="todaybar-fill" id="todayFill"></div></div>
+        <div class="todaybar-label" id="todayLabel"></div>
+      </div>
+      <div class="tweet-form" id="tweetForm" style="display:none">
+        <input id="tweetInput" type="text" maxlength="200" placeholder="What did you get done today?">
+        <button id="tweetBtn">Tweet</button>
+      </div>
+      <div class="age-form" id="ageForm">
+        <span id="ageMessage">How old are you?</span>
+        <input id="ageInput" type="number" min="0" max="120" step="0.1" placeholder="e.g. 34.5">
+        <button id="ageSave">Save</button>
+      </div>
+      <div class="divider"></div>
+      <div class="calendar-wrap" id="calendarWrap" hidden>
+        <div class="legend" id="legendText"><span class="swatch past"></span>Past<span class="swatch future"></span>Future<span class="swatch today"></span>Today</div>
+        <div class="canvas-scroller">
+          <div class="canvas-frame">
+            <canvas id="lifeCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><div>Progress is the rhythm of small steps.</div><div id="how">There's still time?</div></div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const RETIRE = 65; const KEY='life_age'; const $=s=>document.querySelector(s);
+      const ROW_PAD = 6;
+      const s={age:null,birth:null,retire:null,pad:12};
+      const form=$('#ageForm'),msg=$('#ageMessage'),input=$('#ageInput'),save=$('#ageSave'),wrap=$('#calendarWrap'),can=$('#lifeCanvas'),fill=$('#todayFill'),lab=$('#todayLabel'),legend=$('#legendText'),tweetForm=$('#tweetForm');
+
+      function init(){
+        const a=parseFloat(localStorage.getItem(KEY));
+        if(isFinite(a)){
+          s.age=a;
+          establish();
+        } else {
+          tweetForm.style.display='none';
+        }
+      }
+
+      function establish(){
+        const now=new Date();
+        const birth=new Date(now.getTime()-s.age*365.25*86400000);
+        s.birth=startOfDay(birth);
+        s.retire=addYears(s.birth,RETIRE);
+        msg.textContent=`You are ${s.age} years old.`;
+        wrap.hidden=false;
+        tweetForm.style.display='flex';
+        draw();
+      }
+
+      save.onclick=()=>{
+        const v=parseFloat(input.value);
+        if(!isFinite(v)||v<0||v>120)return;
+        localStorage.setItem(KEY,v);
+        s.age=v;
+        establish();
+      };
+
+      $('#btnReset').onclick=()=>{localStorage.removeItem(KEY);location.reload();};
+
+      function addYears(d,yrs){const n=new Date(d);n.setFullYear(n.getFullYear()+yrs);return n}
+      function startOfDay(d){const n=new Date(d);n.setHours(0,0,0,0);return n}
+      function rem900(){const n=new Date();const m=n.getHours()*60+n.getMinutes();return Math.max(0,Math.round(900*(1-m/1440)));}
+      function upd(){const l=rem900();fill.style.width=(l/900*100)+'%';lab.textContent=`${l} of 900 productive minutes left today. What will you get done?`;}
+      setInterval(()=>{if(!document.hidden)upd();},60000);upd();
+
+      function draw(){
+        if (!s.birth || !s.retire) return;
+        const isMobile = window.innerWidth < 1920;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const frame = can.parentElement;
+        const availW = frame.clientWidth - s.pad*2;
+        const cellW = isMobile ? 6 : 10; const dotR = isMobile ? 2 : 3; const rowH = Math.max(ROW_PAD, Math.ceil(dotR*2 + 4));
+        const unitMs = isMobile ? 7*24*60*60*1000 : 24*60*60*1000;
+        const totalUnits = Math.ceil((s.retire - s.birth) / unitMs);
+        legend.innerHTML = isMobile ? '<span class="swatch past"></span>Past weeks<span class="swatch future"></span>Future weeks<span class="swatch today"></span>This week' : '<span class="swatch past"></span>Past days<span class="swatch future"></span>Future days<span class="swatch today"></span>Today';
+
+        const cols = Math.max(20, Math.floor(availW / cellW)); const rows = Math.ceil(totalUnits / cols);
+        const width=s.pad*2+cols*cellW; const height=s.pad*2+rows*rowH;
+        can.style.width=width+'px'; can.style.height=height+'px'; can.width=Math.floor(width*dpr); can.height=Math.floor(height*dpr);
+        const ctx=can.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,width,height);
+        const muted=getVar('--muted'),ink=getVar('--ink'),accent=getVar('--accent');
+        const today=startOfDay(new Date()); let unit=new Date(s.birth);
+        for(let i=0;i<totalUnits;i++){
+          const r=Math.floor(i/cols),c=i%cols; const cx=s.pad+c*cellW+dotR,cy=s.pad+r*rowH+dotR;
+          ctx.beginPath(); ctx.arc(cx,cy,dotR,0,Math.PI*2);
+          if(isMobile){
+            const weekEnd=new Date(unit.getTime()+7*24*60*60*1000);
+            if(today>=unit && today<weekEnd){ctx.fillStyle=accent;}
+            else if(today>weekEnd){ctx.fillStyle=ink;}
+            else{ctx.fillStyle=muted;}
+            unit=weekEnd;
+          } else {
+            if(+unit===+today){ctx.fillStyle=accent;}
+            else if(unit<today){ctx.fillStyle=ink;}
+            else{ctx.fillStyle=muted;}
+            unit.setDate(unit.getDate()+1);
+          }
+          ctx.fill();
+        }
+      }
+
+      document.getElementById('tweetBtn').onclick = () => {
+        const text = document.getElementById('tweetInput').value.trim();
+        const baseUrl = 'https://notanotherday.app';
+        const hashtags = 'notanotherday,makeitcount';
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${hashtags}&url=${encodeURIComponent(baseUrl)}`;
+        window.open(url, '_blank');
+      };
+
+      document.getElementById('how').onclick=()=>{alert('Each dot represents a day since you were born. On mobile and smaller screens, each dot is a week. The brighter ones are those left until retirement. Make them count!');};
+      init(); window.addEventListener('resize',()=>{if(!document.hidden)draw();}); if(window.ResizeObserver)new ResizeObserver(()=>draw()).observe(document.querySelector('.canvas-frame'));
+      function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+    })();
+  </script>
+</body>
+</html>
