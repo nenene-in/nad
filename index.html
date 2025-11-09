@@ -177,7 +177,7 @@
 
       document.getElementById('tweetBtn').onclick = () => {
         const text = document.getElementById('tweetInput').value.trim();
-        const baseUrl = 'https://notanotherday.app';
+        const baseUrl = 'https://notanotherday.pages.dev';
         const hashtags = 'notanotherday,makeitcount';
         const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${hashtags}&url=${encodeURIComponent(baseUrl)}`;
         window.open(url, '_blank');
