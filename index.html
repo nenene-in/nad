@@ -57,6 +57,9 @@
     .tweet-form input {flex:1;background:rgba(255,255,255,.08);border:none;color:#fff;border-radius:10px;padding:10px 12px;}
     .tweet-form button {background:rgba(29,155,240,0.8);border:none;color:#fff;border-radius:10px;padding:10px 16px;cursor:pointer;}
     .tweet-form button:hover {background:rgba(29,155,240,1);}
+    .share-btn {background:rgba(255,255,255,0.1);border:none;color:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;display:none;align-items:center;gap:6px;}
+    @media (max-width:768px){.share-btn{display:flex;}}
+    .share-btn:hover {background:rgba(255,255,255,0.15);}
 
     .footer{padding:12px 20px 18px;display:flex;justify-content:space-between;color:#aaa;font-size:12px}
   </style>
@@ -77,6 +80,7 @@
       <div class="tweet-form" id="tweetForm" style="display:none">
         <input id="tweetInput" type="text" maxlength="200" placeholder="What did you get done today?">
         <button id="tweetBtn">Tweet</button>
+        <button id="shareBtn" class="share-btn">💬 Share</button>
       </div>
       <div class="age-form" id="ageForm">
         <span id="ageMessage">How old are you?</span>
